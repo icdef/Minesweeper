@@ -194,7 +194,7 @@ private int counter = 0;
      * @param x x-coordinate of a tile
      * @param y y-ccordinate of a tile
      */
-    public void klickedright(int x, int y){
+    public void rightclicked(int x, int y){
         int tilex = x / Tile.getWidth();
         int tiley = y / Tile.getHeight();
         if (field[tiley][tilex].isIsreveiled())
@@ -215,7 +215,7 @@ private int counter = 0;
      * @param y y-coordinate of a tile
      * @param fromMouseevent true when function was called because of a mouseevent
      */
-    public void klickedleft(int x, int y, boolean fromMouseevent){
+    public void leftclicked(int x, int y, boolean fromMouseevent){
         int tilex;
         int tiley;
 
@@ -258,37 +258,37 @@ private int counter = 0;
             //out of bound check
             if (bpx < field.length && bpy < field.length){
                 if (!field[bpy][bpx].isIsbomb())
-                    klickedleft(bpx,bpy,false);
+                    leftclicked(bpx,bpy,false);
             }
             if (bpx < field.length && bmy > -1){
                 if (!field[bmy][bpx].isIsbomb())
-                    klickedleft(bpx,bmy,false);
+                    leftclicked(bpx,bmy,false);
             }
             if (bmx > -1 && bpy < field.length){
                 if (!field[bpy][bmx].isIsbomb())
-                    klickedleft(bmx,bpy,false);
+                    leftclicked(bmx,bpy,false);
             }
             if (bmx >-1 && bmy > -1){
                 if (!field[bmy][bmx].isIsbomb())
-                    klickedleft(bmx,bmy,false);
+                    leftclicked(bmx,bmy,false);
             }
 
 
             if (bpx < field.length){
                 if (!field[tiley][bpx].isIsbomb())
-                    klickedleft(bpx,tiley,false);
+                    leftclicked(bpx,tiley,false);
             }
             if (bmx > -1){
                 if (!field[tiley][bmx].isIsbomb())
-                    klickedleft(bmx,tiley,false);
+                    leftclicked(bmx,tiley,false);
             }
             if (bpy < field.length){
                 if (!field[bpy][tilex].isIsbomb())
-                    klickedleft(tilex,bpy,false);
+                    leftclicked(tilex,bpy,false);
             }
             if (bmy >-1){
                 if (!field[bmy][tilex].isIsbomb())
-                    klickedleft(tilex,bmy,false);
+                    leftclicked(tilex,bmy,false);
             }
         }
 

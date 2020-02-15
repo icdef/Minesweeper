@@ -66,9 +66,9 @@ public class Frame extends JFrame implements MouseListener, KeyListener,ActionLi
 
 
         if (e.getButton() == 1)
-            minefield.klickedleft(e.getX() - getInsets().left, e.getY() - getInsets().top-100,true); //-100 depends on height
+            minefield.leftclicked(e.getX() - getInsets().left, e.getY() - getInsets().top-100,true); //-100 depends on height
         if (e.getButton() == 3)
-            minefield.klickedright(e.getX() - getInsets().left, e.getY() - getInsets().top-100);//-100 depends on height
+            minefield.rightclicked(e.getX() - getInsets().left, e.getY() - getInsets().top-100);//-100 depends on height
 
         // do not repaint if game is over
         if (!minefield.isGameover())
