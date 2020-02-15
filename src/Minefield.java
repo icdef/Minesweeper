@@ -58,7 +58,7 @@ private int counter = 0;
         }
 
     }
-    
+
     public boolean isGameover() {
         return gameover;
     }
