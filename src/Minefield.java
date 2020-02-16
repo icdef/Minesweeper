@@ -297,7 +297,7 @@ private int counter = 0;
     }
 
     /**
-     * Recursively reveils the neighbour tiles of the xy tile as long as the neighbour is not
+     * Recursively reveals the neighbour tiles of the xy tile as long as the neighbour is not
      * a bomb or flagged by the player
      * @param x x-coordinate of tile
      * @param y y-coordinate of tile
