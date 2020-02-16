@@ -87,8 +87,9 @@ private int counter = 0;
     public void drawAllBombs(Graphics g){
         for (int y = 0; y <field.length ; y++) {
             for (int x = 0; x <field[y].length ; x++) {
-                if (field[y][x].isIsbomb() ||(field[y][x].isIsbomb() && field[y][x].isIsflagged()) ){  //if tile is a bomb regardless of flagged or unflagged
-                    //redraw tile
+                if (field[y][x].isBomb() ||(field[y][x].isBomb() && field[y][x].isFlagged()) ){  //if tile is a bomb regardless of flagged or unflagged
+                    //redraw  a tile to the default tile
+
                     g.setColor(Color.WHITE);
                     g.fillRect(x*Tile.getWidth(),100+y*Tile.getHeight(),Tile.getWidth(),Tile.getHeight());
                     g.setColor(Color.BLACK);
@@ -114,10 +115,11 @@ private int counter = 0;
         while(counter > 0) {
             int rndx = (int) (Math.random()*20);
             int rndy = (int) (Math.random()*20);
-            if (rndx == startx && rndy == starty) // so a bomb wont spawn on the tile your reveil on the start of the game
+            if (rndx == startx && rndy == starty) // so a bomb wont spawn on the tile your reveal on the start of the game
                 continue;
-            if (!field[rndy][rndx].isIsbomb()) {
-                field[rndy][rndx].setIsbomb(true);
+            if (!field[rndy][rndx].isBomb()) {
+                //sets the bombs into the tile
+                field[rndy][rndx].setBomb(true);
                 counter--;
             }
         }
@@ -132,14 +134,14 @@ private int counter = 0;
         for (int y = 0; y <field.length ; y++) {
             for (int x = 0; x <field[y].length ; x++) {
                 int neighbourbombs = getNeighbourBombs(x,y);
-                if (!field[y][x].isIsbomb())
+                if (!field[y][x].isBomb())
                     field[y][x].setNeighbourbomb(neighbourbombs);
             }
         }
     }
 
     /**
-     * gets the neighbout bombs of a tile with the coordinates x and y
+     * gets the neighbour bombs of a tile with the coordinates x and y
      * @param x x-coordinate of tile
      * @param y y-coordinate of tile
      * @return nr of neighbour bombs of a tile
@@ -150,39 +152,41 @@ private int counter = 0;
         int bmx = x-1;
         int bpy = y+1;
         int bmy = y-1;
-        //out of bound checks
+        //out of bound checks.
+        //If neighbour tile of the tile with the x and y coordinate is not out of bounds increment neighbourbombs number of the tile
+        // with the coordinates x and y
         if (bpx < field[y].length && bpy < field.length){
-            if (field[bpy][bpx].isIsbomb())
+            if (field[bpy][bpx].isBomb())
                 neighbourbombs++;
         }
         if (bpx < field[y].length && bmy > -1){
-            if (field[bmy][bpx].isIsbomb())
+            if (field[bmy][bpx].isBomb())
                 neighbourbombs++;
         }
         if (bmx > -1 && bpy < field.length){
-            if (field[bpy][bmx].isIsbomb())
+            if (field[bpy][bmx].isBomb())
                 neighbourbombs++;
         }
         if (bmx >-1 && bmy > -1){
-            if (field[bmy][bmx].isIsbomb())
+            if (field[bmy][bmx].isBomb())
                 neighbourbombs++;
         }
 
 
         if (bpx < field[y].length){
-            if (field[y][bpx].isIsbomb())
+            if (field[y][bpx].isBomb())
                 neighbourbombs++;
         }
         if (bmx > -1){
-            if (field[y][bmx].isIsbomb())
+            if (field[y][bmx].isBomb())
                 neighbourbombs++;
         }
         if (bpy < field.length){
-            if (field[bpy][x].isIsbomb())
+            if (field[bpy][x].isBomb())
                 neighbourbombs++;
         }
         if (bmy >-1){
-            if (field[bmy][x].isIsbomb())
+            if (field[bmy][x].isBomb())
                 neighbourbombs++;
         }
 
@@ -197,9 +201,11 @@ private int counter = 0;
     public void rightclicked(int x, int y){
         int tilex = x / Tile.getWidth();
         int tiley = y / Tile.getHeight();
-        if (field[tiley][tilex].isIsreveiled())
+        //cannot flag revealed tiles
+        if (field[tiley][tilex].isRevealed())
             return;
-        if (!field[tiley][tilex].isIsflagged()) {
+
+        if (!field[tiley][tilex].isFlagged()) {
             field[tiley][tilex].flag();
             amountofbombs--;
         }
@@ -210,89 +216,163 @@ private int counter = 0;
     }
 
     /**
-     *  changes proberties of a tile (bomb or shows number) and their neighbour tile if tile not bomb and nr is 0
+     *  changes properties of a tile (bomb or shows number)
+     *  Onto next call of the draw function it will be shown on the field.
      * @param x x-coordinate of a tile
      * @param y y-coordinate of a tile
-     * @param fromMouseevent true when function was called because of a mouseevent
      */
-    public void leftclicked(int x, int y, boolean fromMouseevent){
-        int tilex;
-        int tiley;
+    public void leftclicked(int x, int y){
+        int tilex = x / Tile.getWidth();
+        int tiley = y / Tile.getHeight();
 
-        if (fromMouseevent) {
-             tilex = x / Tile.getWidth();
-             tiley = y / Tile.getHeight();
-        }
-        else{
-            tilex = x;
-            tiley = y;
-        }
-
-        if (field[tiley][tilex].isIsreveiled())
+        //tile was once already clicked on
+        if (field[tiley][tilex].isRevealed())
             return;
-        if (field[tiley][tilex].isIsflagged())
+        //tile is flagged
+        if (field[tiley][tilex].isFlagged())
             return;
-
+        //tile gets revealed and his information will get drawn
         field[tiley][tilex].reveil();
-
-        if (field[tiley][tilex].isIsbomb() && fromMouseevent) {
+        // player klicked on a bomb. Game is over.
+        if (field[tiley][tilex].isBomb()) {
             lost = true;
             return;
         }
-        if (field[tiley][tilex].isIsbomb()) {
-            return;
-        }
+
 
         notbombs--;
-
+        //found all safa tiles. Game is over. you won
         if (notbombs == 0) {
             won = true;
             return;
         }
 
+        // clicked tile has no bombs next to it so we can reveal all their neighbours
         if (field[tiley][tilex].getNeighbourbomb() == 0){
             int bpx = tilex+1;
             int bmx = tilex-1;
             int bpy = tiley+1;
             int bmy = tiley-1;
-            //out of bound check
+
+            //out of bound checks If neighbour tile is not out of bounds
+            // reveal their neighbour tiles as long as they are not flagged or bombs
+
             if (bpx < field.length && bpy < field.length){
-                if (!field[bpy][bpx].isIsbomb())
-                    leftclicked(bpx,bpy,false);
+                if (!field[bpy][bpx].isBomb())
+                    revealNeighbourTiles(bpx,bpy);
             }
             if (bpx < field.length && bmy > -1){
-                if (!field[bmy][bpx].isIsbomb())
-                    leftclicked(bpx,bmy,false);
+                if (!field[bmy][bpx].isBomb())
+                    revealNeighbourTiles(bpx,bmy);
             }
             if (bmx > -1 && bpy < field.length){
-                if (!field[bpy][bmx].isIsbomb())
-                    leftclicked(bmx,bpy,false);
+                if (!field[bpy][bmx].isBomb())
+                    revealNeighbourTiles(bmx,bpy);
             }
             if (bmx >-1 && bmy > -1){
-                if (!field[bmy][bmx].isIsbomb())
-                    leftclicked(bmx,bmy,false);
+                if (!field[bmy][bmx].isBomb())
+                    revealNeighbourTiles(bmx,bmy);
             }
 
 
             if (bpx < field.length){
-                if (!field[tiley][bpx].isIsbomb())
-                    leftclicked(bpx,tiley,false);
+                if (!field[tiley][bpx].isBomb())
+                    revealNeighbourTiles(bpx,tiley);
             }
             if (bmx > -1){
-                if (!field[tiley][bmx].isIsbomb())
-                    leftclicked(bmx,tiley,false);
+                if (!field[tiley][bmx].isBomb())
+                    revealNeighbourTiles(bmx,tiley);
             }
             if (bpy < field.length){
-                if (!field[bpy][tilex].isIsbomb())
-                    leftclicked(tilex,bpy,false);
+                if (!field[bpy][tilex].isBomb())
+                    revealNeighbourTiles(tilex,bpy);
             }
             if (bmy >-1){
-                if (!field[bmy][tilex].isIsbomb())
-                    leftclicked(tilex,bmy,false);
+                if (!field[bmy][tilex].isBomb())
+                    revealNeighbourTiles(tilex,bmy);
             }
         }
 
+
     }
+
+    /**
+     * Recursively reveils the neighbour tiles of the xy tile as long as the neighbour is not
+     * a bomb or flagged by the player
+     * @param x x-coordinate of tile
+     * @param y y-coordinate of tile
+     */
+    private void revealNeighbourTiles(int x, int y){
+        int tilex = x;
+        int tiley = y;
+
+        //tile was already clicked on
+        if (field[tiley][tilex].isRevealed())
+            return;
+        //tile is flagged which not get revealed
+        if (field[tiley][tilex].isFlagged())
+            return;
+        //tile gets revealed and his information will get drawn
+        field[tiley][tilex].reveil();
+        notbombs--;
+        //found all safa tiles. Game is over. you won
+        if (notbombs == 0) {
+            won = true;
+            return;
+        }
+       //tile is a bomb which should not get revealed
+        if (field[tiley][tilex].isBomb()) {
+            return;
+        }
+        //is tile who has adjacent bombs. Only goes into recursion
+        //when tiles has no bombs next to it
+        if (field[tiley][tilex].getNeighbourbomb() != 0)
+            return;
+
+        int bpx = tilex+1;
+        int bmx = tilex-1;
+        int bpy = tiley+1;
+        int bmy = tiley-1;
+
+        //out of bound checks If neighbour tile is not out of bounds
+        // call function with the coordinates of the neighbour tile.
+        // boolean is false cause the call of the function was not from a mouse event.
+        if (bpx < field.length && bpy < field.length){
+            if (!field[bpy][bpx].isBomb())
+                revealNeighbourTiles(bpx,bpy);
+        }
+        if (bpx < field.length && bmy > -1){
+            if (!field[bmy][bpx].isBomb())
+                revealNeighbourTiles(bpx,bmy);
+        }
+        if (bmx > -1 && bpy < field.length){
+            if (!field[bpy][bmx].isBomb())
+                revealNeighbourTiles(bmx,bpy);
+        }
+        if (bmx >-1 && bmy > -1){
+            if (!field[bmy][bmx].isBomb())
+                revealNeighbourTiles(bmx,bmy);
+        }
+
+
+        if (bpx < field.length){
+            if (!field[tiley][bpx].isBomb())
+                revealNeighbourTiles(bpx,tiley);
+        }
+        if (bmx > -1){
+            if (!field[tiley][bmx].isBomb())
+                revealNeighbourTiles(bmx,tiley);
+        }
+        if (bpy < field.length){
+            if (!field[bpy][tilex].isBomb())
+                revealNeighbourTiles(tilex,bpy);
+        }
+        if (bmy >-1){
+            if (!field[bmy][tilex].isBomb())
+                revealNeighbourTiles(tilex,bmy);
+        }
+    }
+
 
 
 

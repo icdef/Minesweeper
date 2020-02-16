@@ -50,6 +50,7 @@ public class Frame extends JFrame implements MouseListener, KeyListener,ActionLi
         if (e.getButton() == 3 && start) // first click should not be a right click
             return;
         if (start) {  //so first leftklick never on bomb
+            //initialises the bombs on the minefield
             minefield.placeBombs(e.getX() - getInsets().left, e.getY() - getInsets().top-100);//-100 abhängigi von height
             start = false;
 
@@ -64,9 +65,10 @@ public class Frame extends JFrame implements MouseListener, KeyListener,ActionLi
         if(e.getX() >getInsets().left+width)
             return;
 
-
+        // on leftclick reveal the tile you clicked (either bomb or safe tile where you get the nr of adjacent bombs)
         if (e.getButton() == 1)
-            minefield.leftclicked(e.getX() - getInsets().left, e.getY() - getInsets().top-100,true); //-100 depends on height
+            minefield.leftclicked(e.getX() - getInsets().left, e.getY() - getInsets().top-100); //-100 depends on height
+        // on rightclick flags the tile and not reveal the tile
         if (e.getButton() == 3)
             minefield.rightclicked(e.getX() - getInsets().left, e.getY() - getInsets().top-100);//-100 depends on height
 
