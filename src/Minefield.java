@@ -105,7 +105,7 @@ private int counter = 0;
 
     /**
      * places Bombs into the field
-     * @param sx x-ccordinate of the first legal click
+     * @param sx x-coordinate of the first legal click
      * @param sy y- coordinate of the first legal click
      */
     public void placeBombs(int sx, int sy){
@@ -233,7 +233,7 @@ private int counter = 0;
             return;
         //tile gets revealed and his information will get drawn
         field[tiley][tilex].reveil();
-        // player klicked on a bomb. Game is over.
+        // player clicked on a bomb. Game is over.
         if (field[tiley][tilex].isBomb()) {
             lost = true;
             return;
@@ -241,13 +241,13 @@ private int counter = 0;
 
 
         notbombs--;
-        //found all safa tiles. Game is over. you won
+        //found all safe tiles. Game is over. you won
         if (notbombs == 0) {
             won = true;
             return;
         }
 
-        // clicked tile has no bombs next to it so we can reveal all their neighbours
+        // clicked tile has no bombs next to it so we can reveal all its neighbours
         if (field[tiley][tilex].getNeighbourbomb() == 0){
             int bpx = tilex+1;
             int bmx = tilex-1;

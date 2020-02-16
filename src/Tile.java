@@ -52,7 +52,7 @@ public class Tile {
             g.drawString("X",x*width+4,100+y*height+18);//+100 depends on height
             return;
         }
-        //when clicked on a safe tile you get the nr of neihgbour bombs written into the tile
+        //when clicked on a safe tile you get the nr of neighbour bombs written into the tile
         if (revealed) //shows the nr of neighbourbombs on the tile
             g.drawString(""+neighbourbomb,x*width+4,100+y*height+18);//+100 depends on height
 
@@ -66,7 +66,7 @@ public class Tile {
         neighbourbomb = 0;
         isflagged = false;
     }
-    //gets called if you left-clicked a tile
+
     public void reveil(){
         this.revealed = true;
     }
