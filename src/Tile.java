@@ -19,6 +19,14 @@ public class Tile {
         this.y = y;
     }
 
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
     /**
      *  Flaggs the clicked tile or shows you if the tile was a bomb or safe
      * @param g

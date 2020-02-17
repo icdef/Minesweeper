@@ -1,4 +1,6 @@
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Minefield {
 
@@ -148,47 +150,15 @@ private int counter = 0;
      */
     public int getNeighbourBombs(int x, int y){
         int neighbourbombs = 0;
-        int bpx = x+1;
-        int bmx = x-1;
-        int bpy = y+1;
-        int bmy = y-1;
-        //out of bound checks.
-        //If neighbour tile of the tile with the x and y coordinate is not out of bounds increment neighbourbombs number of the tile
-        // with the coordinates x and y
-        if (bpx < field[y].length && bpy < field.length){
-            if (field[bpy][bpx].isBomb())
-                neighbourbombs++;
-        }
-        if (bpx < field[y].length && bmy > -1){
-            if (field[bmy][bpx].isBomb())
-                neighbourbombs++;
-        }
-        if (bmx > -1 && bpy < field.length){
-            if (field[bpy][bmx].isBomb())
-                neighbourbombs++;
-        }
-        if (bmx >-1 && bmy > -1){
-            if (field[bmy][bmx].isBomb())
+
+       // get neighbours
+        List<Tile> tileList = getNeighbours(x,y);
+        // if neighbour a bomb increment neighbourbombs
+        for (Tile t: tileList){
+            if (t.isBomb())
                 neighbourbombs++;
         }
 
-
-        if (bpx < field[y].length){
-            if (field[y][bpx].isBomb())
-                neighbourbombs++;
-        }
-        if (bmx > -1){
-            if (field[y][bmx].isBomb())
-                neighbourbombs++;
-        }
-        if (bpy < field.length){
-            if (field[bpy][x].isBomb())
-                neighbourbombs++;
-        }
-        if (bmy >-1){
-            if (field[bmy][x].isBomb())
-                neighbourbombs++;
-        }
 
         return neighbourbombs;
     }
@@ -250,50 +220,13 @@ private int counter = 0;
 
         // clicked tile has no bombs next to it so we can reveal all its neighbours
         if (field[tiley][tilex].getNeighbourbomb() == 0){
-            int bpx = tilex+1;
-            int bmx = tilex-1;
-            int bpy = tiley+1;
-            int bmy = tiley-1;
-
-            //out of bound checks If neighbour tile is not out of bounds
-            // reveal their neighbour tiles as long as they are not flagged or bombs
-
-            if (bpx < field.length && bpy < field.length){
-                if (!field[bpy][bpx].isBomb())
-                    revealNeighbourTiles(bpx,bpy);
-            }
-            if (bpx < field.length && bmy > -1){
-                if (!field[bmy][bpx].isBomb())
-                    revealNeighbourTiles(bpx,bmy);
-            }
-            if (bmx > -1 && bpy < field.length){
-                if (!field[bpy][bmx].isBomb())
-                    revealNeighbourTiles(bmx,bpy);
-            }
-            if (bmx >-1 && bmy > -1){
-                if (!field[bmy][bmx].isBomb())
-                    revealNeighbourTiles(bmx,bmy);
-            }
-
-
-            if (bpx < field.length){
-                if (!field[tiley][bpx].isBomb())
-                    revealNeighbourTiles(bpx,tiley);
-            }
-            if (bmx > -1){
-                if (!field[tiley][bmx].isBomb())
-                    revealNeighbourTiles(bmx,tiley);
-            }
-            if (bpy < field.length){
-                if (!field[bpy][tilex].isBomb())
-                    revealNeighbourTiles(tilex,bpy);
-            }
-            if (bmy >-1){
-                if (!field[bmy][tilex].isBomb())
-                    revealNeighbourTiles(tilex,bmy);
+            //get neighbours from tile
+            List<Tile> tileList = getNeighbours(tilex,tiley);
+            // reveal all neighbours
+            for (Tile t: tileList){
+                revealNeighbourTiles(t.getX(),t.getY());
             }
         }
-
 
     }
 
@@ -313,6 +246,11 @@ private int counter = 0;
         //tile is flagged which not get revealed
         if (field[tiley][tilex].isFlagged())
             return;
+
+       //tile is a bomb which should not get revealed
+        if (field[tiley][tilex].isBomb()) {
+            return;
+        }
         //tile gets revealed and his information will get drawn
         field[tiley][tilex].reveil();
         notbombs--;
@@ -321,59 +259,57 @@ private int counter = 0;
             won = true;
             return;
         }
-       //tile is a bomb which should not get revealed
-        if (field[tiley][tilex].isBomb()) {
-            return;
-        }
         //is tile who has adjacent bombs. Only goes into recursion
         //when tiles has no bombs next to it
         if (field[tiley][tilex].getNeighbourbomb() != 0)
             return;
 
+        List<Tile> tileList = getNeighbours(x,y);
+        // go in recursion for every neighbour
+        for (Tile t: tileList){
+            revealNeighbourTiles(t.getX(),t.getY());
+        }
+
+    }
+    public List<Tile> getNeighbours(int x, int y){
+        List<Tile> tileList = new ArrayList<>();
+        int tilex = x;
+        int tiley = y;
         int bpx = tilex+1;
         int bmx = tilex-1;
         int bpy = tiley+1;
         int bmy = tiley-1;
 
-        //out of bound checks If neighbour tile is not out of bounds
-        // call function with the coordinates of the neighbour tile.
-        // boolean is false cause the call of the function was not from a mouse event.
+        //out of bound checks If neighbour tile is not out of bounds add to list
+
         if (bpx < field.length && bpy < field.length){
-            if (!field[bpy][bpx].isBomb())
-                revealNeighbourTiles(bpx,bpy);
+                tileList.add(field[bpy][bpx]);
         }
         if (bpx < field.length && bmy > -1){
-            if (!field[bmy][bpx].isBomb())
-                revealNeighbourTiles(bpx,bmy);
+            tileList.add(field[bmy][bpx]);
         }
         if (bmx > -1 && bpy < field.length){
-            if (!field[bpy][bmx].isBomb())
-                revealNeighbourTiles(bmx,bpy);
+            tileList.add(field[bpy][bmx]);
         }
         if (bmx >-1 && bmy > -1){
-            if (!field[bmy][bmx].isBomb())
-                revealNeighbourTiles(bmx,bmy);
+            tileList.add(field[bmy][bmx]);
         }
-
 
         if (bpx < field.length){
-            if (!field[tiley][bpx].isBomb())
-                revealNeighbourTiles(bpx,tiley);
+            tileList.add(field[tiley][bpx]);
         }
         if (bmx > -1){
-            if (!field[tiley][bmx].isBomb())
-                revealNeighbourTiles(bmx,tiley);
+            tileList.add(field[tiley][bmx]);
         }
         if (bpy < field.length){
-            if (!field[bpy][tilex].isBomb())
-                revealNeighbourTiles(tilex,bpy);
+            tileList.add(field[bpy][tilex]);
         }
         if (bmy >-1){
-            if (!field[bmy][tilex].isBomb())
-                revealNeighbourTiles(tilex,bmy);
+            tileList.add(field[bmy][tilex]);
         }
-    }
 
+        return tileList;
+    }
 
 
 
