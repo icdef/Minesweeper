@@ -208,11 +208,12 @@ private int counter = 0;
         if (!field[tiley][tilex].isFlagged()) {
             field[tiley][tilex].flag();
             amountofbombs--;
+            return;
         }
-        else {
+
             field[tiley][tilex].unflag();
             amountofbombs++;
-        }
+
     }
 
     /**
